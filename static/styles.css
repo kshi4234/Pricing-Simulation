@@ -1,0 +1,103 @@
+/* General page */
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+} */
+
+.form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh; /* leaves room for header */
+}
+
+header {
+    background:#dde2eb;
+    border-bottom:#000000 2px solid;
+    width: 100%;
+    height:82px;
+    line-height: 2.6;
+    align-items: center;
+}
+
+/* Centered container */
+.container {
+  width: 100%;
+  max-width: 450px;
+  padding: 20px;
+}
+
+/* Headline */
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Card style for form/results */
+.form-card, .results-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+/* Labels + Inputs */
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #444;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb; /* nice blue */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+/* Results */
+.results-card h2 {
+  margin-top: 0;
+  color: #222;
+}
+
+.results-card p {
+  font-size: 16px;
+  margin: 8px 0;
+}

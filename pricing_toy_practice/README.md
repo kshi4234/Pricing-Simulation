@@ -1,0 +1,1 @@
+Literally just playing around with regression models for pricing. Largely sourced from another person's Github repo: https://github.com/gurezende/Price_Optimization

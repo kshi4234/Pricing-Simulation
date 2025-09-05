@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulation Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Price Simulation Results</h1>
+  </header>
+
+  <main>
+    <div class="results-container">
+      <h2>Summary</h2>
+      <p><strong>Price:</strong> (?)$</p>
+      <p><strong>Elasticity:</strong> (?)</p>
+      <p><strong>Demand:</strong>(?) units</p>
+      <p><strong>Revenue:</strong>$(?)</p>
+    </div>
+
+    <div class="actions">
+      <a href="{{ url_for('home') }}" class="button">Run Another Simulation</a>
+    </div>
+  </main>
+</body>
+</html>
