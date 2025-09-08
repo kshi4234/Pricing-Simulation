@@ -18,7 +18,7 @@ def explore():
 
     # print(f'Data Shape: {df.shape}')
 
-    # View data head
+    # # View data head
     # print(df.sample(3))
 
     df.fillna('No Discount', inplace=True)
@@ -71,6 +71,66 @@ def explore():
     # Add a column of 1's that will be multiplied with a parameter; this will be our intercept term
     X = sm.add_constant(X)
     model = sm.OLS(y, X).fit()
-    print(model.summary())
+    
+    # print(model.summary())
+    
+    param_df = pd.DataFrame(model.params).T
+    
+    ratio = (param_df['const'] + param_df['discount_High']) / (param_df['const'] + param_df['discount_No Discount'])
+    # print(ratio)
+    
+    """
+    Authors of this analysis wanted to do a split sample analysis, equivalent to a fully interacted multiple regression.
+    This essentially varies slope and intercept among all different discount types.
+    
+    To do this, I will need to split out all of the discount types, and then for each discount type further split
+    into each product type. However, for the sake of this analysis, I will only do so for the "No Discount" discount type.
+    Otherwise I would get like 42 different graphs, which would be annoying.
+    """
+    data_filtered = df.query('discount == "No Discount"')
+    
+    products = data_filtered['Product'].unique()
+    
+    # Empty dataframe to store all results, as we have expectileGAM for all products
+    all_gam_results = pd.DataFrame()
+    # For-loop in order to run splits. Iterate over each product
+    for product in products:
+        product_data = data_filtered.query(f'Product == "{product}"')
+        X = product_data[['price']]
+        y = product_data[['Quantity']]
+
+        expectiles = [0.025, 0.5, 0.975]
+        # Empty dictionary to store the results from running GAM regression on each expectile (len(expectiles) number)
+        gam_results = {}
+        for expectile in expectiles:
+            gam = ExpectileGAM(s(0), expectile=expectile)   # s(0) indicates that we are fitting just a single spline on the 0th feature, which for X is only price
+            gam.fit(X, y)
+            gam_results[f'pred_{expectile}'] = gam.predict(X)   # Run prediciton on the training data to get expectile predictions
+            print(expectile, "|", product, "|", gam.deviance_residuals(X,y).mean()) # Print out the average squared deviation (MSE) of the fit
+            # quit()
+        print("-----------\n")
+        gam_preds = pd.DataFrame(gam_results).set_index(X.index)    # Make the dataframe so corresponding predictions are aligned with data indices
+        df_gam_preds = pd.concat([product_data[['price', 'Product', 'Quantity']], gam_preds], axis=1)   # Concatenate with product data along the column dimension, with matching indices
+        """
+        Concatenate along the rows as we loop through the products, which will get us the full dataset under discount_type,
+        with ExpectileGAM predictions for each product at all expectiles
+        """
+        all_gam_results = pd.concat([all_gam_results, df_gam_preds], axis=0)    
+    # Create the plot
+    p = (ggplot(
+                data = all_gam_results,
+                mapping = aes(x='price', y='Quantity', color='Product', group= 'Product') ) +
+                geom_ribbon(aes(ymax= 'pred_0.975', ymin= 'pred_0.025'), 
+                            fill='#d3d3d3', color= '#FF000000', alpha=0.7, show_legend=False) +
+                geom_point(alpha=0.75) + 
+                geom_line(aes(y='pred_0.5'), color='blue') +
+                facet_wrap('Product', scales='free') + 
+                labs(title='GAM Price vs Quantity') +
+                theme(figure_size=(12,6)
+            ))
+    p.show()
+    
+    # TODO: Implement price optimization
+    
 
 explore()
