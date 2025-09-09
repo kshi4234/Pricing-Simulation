@@ -131,6 +131,77 @@ def explore():
     p.show()
     
     # TODO: Implement price optimization
+    # Rather than optimizing price, we recognize that we have obtained GAM fits for elasticity between price and quantity
+    # for each discount type and each product type, and have made predictions for the quantity of units sold for each data point. 
+    # Then to compute the predicted revenue, simply multiply price and predicted quantity at any given price point.
+    # Further, compute the actual revenue by multiplying actual quantity sold and price.
     
+    for col in all_gam_results.columns:
+        if col.startswith('pred'):
+            all_gam_results['revenue_' + col] = all_gam_results['price'] * all_gam_results[col]
+    all_gam_results['revenue_actual'] = all_gam_results['price'] * all_gam_results['Quantity']
+    print(all_gam_results.sample(2))
+    
+    # Afterwards, to find the optimal revenue we want to get the maximum predicted revenue among all price points for a particular product
+    # This will be done over every expectile.
+    # Calculating where the predicted median revenue is the max
+    best_50 = (
+        all_gam_results
+        .groupby('Product')
+        .apply(lambda x: x[x['revenue_pred_0.5'] == x['revenue_pred_0.5'].max()].head(1))
+        .reset_index(level=0, drop=True)
+    )
+
+    # Calculating where the predicted 97.5% percentile revenue is the max
+    best_975 = (
+        all_gam_results
+        .groupby('Product')
+        .apply(lambda x: x[x['revenue_pred_0.975'] == x['revenue_pred_0.975'].max()].head(1))
+        .reset_index(level=0, drop=True)
+    )
+
+    # Calculating where the predicted 2.5% percentile revenue is the max
+    best_025 = (
+        all_gam_results
+        .groupby('Product')
+        .apply(lambda x: x[x['revenue_pred_0.025'] == x['revenue_pred_0.025'].max()].head(1))
+        .reset_index(level=0, drop=True)
+    )
+    
+    # Visualize the GAM Optimization Result
+    # NOTE: I have a HUGE objection to how the author of this github constructed the confidence intervals
+    # The confidence interval here is simply constructed by taking the range of values between the 0.025 and 0.975
+    # expectile curves, which does not contain information about the variance of predictions or parameters.
+    # This is actually the prediction interval.
+    pp = (ggplot(
+        # Data
+        data = all_gam_results,
+        # Axes
+        mapping = aes(x='price', y='revenue_pred_0.5', color='Product', group='Product') ) + 
+        # Adding the Band
+        geom_ribbon(aes(ymax= 'revenue_pred_0.975', ymin= 'revenue_pred_0.025'), 
+                        fill='#d3d3d3', color= '#FF000000', alpha=0.7, show_legend=False) +
+        # Adding the points
+        geom_point(aes(y='revenue_actual'), alpha=0.15, color="#2C3E50") +
+        # Adding 50th percentile line
+        geom_line(aes(y='revenue_pred_0.5'), alpha=0.5, color='darkred') +
+        # Addimg the 50th pct points
+        geom_point(data=best_50, color='red') + 
+        # Addimg the 97th pct points
+        geom_point(data=best_975, mapping= aes(y='revenue_pred_0.975'), color='blue') + 
+        # Addimg the 2.5th pct points
+        geom_point(data=best_025, mapping= aes(y='revenue_pred_0.025'), color='blue') + 
+        # Wraps by product
+        facet_wrap('Product', scales='free') + 
+        # Labels
+        labs(
+            title='Price Optimization',
+            subtitle='Maximum median revenue (red point) vs 95% Maximum Confidence Interval',
+            x= 'Price',
+            y= 'Predicted Revenue'
+            ) +
+        theme(figure_size=(12,7))
+    )
+    pp.show()
 
 explore()
