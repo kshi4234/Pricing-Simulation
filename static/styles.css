@@ -17,11 +17,58 @@ body {
   margin: 0;
 } */
 
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    justify-content: center;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.tabcontent {
+  animation: fadeEffect 1s; /* Fading effect takes 1 second */
+}
+
+/* Go from zero to full opacity */
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
 .form {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 80vh; /* leaves room for header */
+  flex-direction: row;
 }
 
 header {
@@ -33,7 +80,7 @@ header {
     align-items: center;
 }
 
-/* Centered container */
+/*Centered container*/
 .container {
   width: 100%;
   max-width: 450px;
@@ -73,31 +120,3 @@ input {
   font-size: 14px;
 }
 
-/* Button */
-button {
-  width: 100%;
-  padding: 12px;
-  background: #2563eb; /* nice blue */
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background: #1d4ed8;
-}
-
-/* Results */
-.results-card h2 {
-  margin-top: 0;
-  color: #222;
-}
-
-.results-card p {
-  font-size: 16px;
-  margin: 8px 0;
-}

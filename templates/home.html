@@ -1,22 +1,45 @@
 <html>
     <head>
         <title>Pricing Simulation</title>
+        <script type="text/javascript" src="{{url_for('static', filename='functions.js')}}"></script>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     </head>
     <body>
         <header>
             <h1>Price Simulation Tool</h1>
         </header>
-        <div class="form">
-            <form action="/result", method="post", enctype="multipart/form-data">
-                <div class="im-upload">
-                    <label for="im:">Upload Your Data???:</label>
-                    <input type="file" name="file"> 
-                </div>
-                <div class="submit">
-                    <input type="submit" name="submit">
-                </div>
-            </form>
+        
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Welcome')">Welcome</button>
+            <button class="tablinks" onclick="openTab(event, 'Submit Information')">Submit Information</button>
+            <button class="tablinks" onclick="openTab(event, 'Results')">Results</button>
+        </div>
+
+        <div id="Welcome" class="tabcontent">
+            <h3>Welcome!</h3>
+            <p>We are happy to help with your business needs!</p>
+        </div>
+        <div id="Submit Information" class="tabcontent">
+            <div class="form">
+                <form action="/result", method="post", enctype="multipart/form-data">
+                    <div class="im-upload">
+                        <label for="im:">Upload Your Data???:</label>
+                        <input type="file" name="file"> 
+                    </div>
+                    <div class="submit">
+                        <input type="submit" name="submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="Results" class="tabcontent">
+            <div class="results-container">
+                <h2>Summary</h2>
+                <p><strong>Price:</strong> (?)$</p>
+                <p><strong>Elasticity:</strong> (?)</p>
+                <p><strong>Demand:</strong>(?) units</p>
+                <p><strong>Revenue:</strong>$(?)</p>
+            </div>
         </div>
     </body>
 </html>
